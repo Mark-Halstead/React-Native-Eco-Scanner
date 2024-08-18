@@ -52,13 +52,34 @@ export default function ResultScreen({ route, navigation }) {
       {/* Environmental Impact */}
       <Text style={styles.sectionTitle}>Environmental Impact:</Text>
       {productData.ecoscore_grade && (
-        <Text style={styles.text}>Eco-Score: {productData.ecoscore_grade.toUpperCase()}</Text>
+        <View style={styles.infoBlock}>
+          <Text style={styles.text}>Eco-Score: {productData.ecoscore_grade.toUpperCase()}</Text>
+          <Text style={styles.infoText}>
+            The Eco-Score is a label that provides information on the environmental impact of a product. 
+            It takes into account factors such as greenhouse gas emissions, biodiversity impact, 
+            water consumption, and pollution.
+            Grades range from 'A' (low impact) to 'E' (high impact).
+          </Text>
+        </View>
       )}
       {productData.packaging && (
-        <Text style={styles.text}>Packaging: {productData.packaging}</Text>
+        <View style={styles.infoBlock}>
+          <Text style={styles.text}>Packaging: {productData.packaging}</Text>
+          <Text style={styles.infoText}>
+            Packaging details indicate the materials used and their recyclability. 
+            More sustainable packaging includes materials that are recyclable, compostable, or made from renewable resources. 
+            Understanding packaging helps in reducing waste and making environmentally friendly choices.
+          </Text>
+        </View>
       )}
       {productData.carbon_footprint_value && (
-        <Text style={styles.text}>Carbon Footprint: {productData.carbon_footprint_value} {productData.carbon_footprint_unit}</Text>
+        <View style={styles.infoBlock}>
+          <Text style={styles.text}>Carbon Footprint: {productData.carbon_footprint_value} {productData.carbon_footprint_unit}</Text>
+          <Text style={styles.infoText}>
+            The carbon footprint represents the total greenhouse gas emissions caused directly or indirectly by the product. 
+            A lower carbon footprint indicates a lower environmental impact.
+          </Text>
+        </View>
       )}
 
       <Button title="View History" onPress={() => navigation.navigate('History')} />
@@ -86,6 +107,14 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginTop: 20,
+  },
+  infoBlock: {
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  infoText: {
+    fontSize: 16,
+    color: 'gray',
   },
   errorText: {
     fontSize: 18,

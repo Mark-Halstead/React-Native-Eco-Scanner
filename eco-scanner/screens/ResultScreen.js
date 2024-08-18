@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, Button } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, Button, ScrollView } from 'react-native';
 import axios from 'axios';
 
 export default function ResultScreen({ route, navigation }) {
@@ -22,6 +22,21 @@ export default function ResultScreen({ route, navigation }) {
     fetchProductData();
   }, [barcode]);
 
+  const getEcoScoreFeedback = (ecoScore) => {
+    switch (ecoScore) {
+      case 'A':
+      case 'B':
+        return 'This product has a good eco-score, indicating a lower environmental impact.';
+      case 'C':
+        return 'This product has a moderate eco-score. Consider if there are better options available.';
+      case 'D':
+      case 'E':
+        return 'This product has a bad eco-score, indicating a higher environmental impact. Consider choosing a more environmentally friendly option.';
+      default:
+        return 'Eco-score not available.';
+    }
+  };
+
   if (loading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
@@ -35,7 +50,7 @@ export default function ResultScreen({ route, navigation }) {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
       <Text style={styles.title}>{productData.product_name}</Text>
       <Text style={styles.text}>Brand: {productData.brands}</Text>
       <Text style={styles.text}>Category: {productData.categories}</Text>
@@ -57,9 +72,9 @@ export default function ResultScreen({ route, navigation }) {
           <Text style={styles.infoText}>
             The Eco-Score is a label that provides information on the environmental impact of a product. 
             It takes into account factors such as greenhouse gas emissions, biodiversity impact, 
-            water consumption, and pollution.
-            Grades range from 'A' (low impact) to 'E' (high impact).
+            water consumption, and pollution. Grades range from 'A' (low impact) to 'E' (high impact).
           </Text>
+          <Text style={styles.feedbackText}>{getEcoScoreFeedback(productData.ecoscore_grade.toUpperCase())}</Text>
         </View>
       )}
       {productData.packaging && (
@@ -83,16 +98,15 @@ export default function ResultScreen({ route, navigation }) {
       )}
 
       <Button title="View History" onPress={() => navigation.navigate('History')} />
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  scrollContainer: {
+    padding: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 16,
   },
   title: {
     fontSize: 24,
@@ -115,6 +129,12 @@ const styles = StyleSheet.create({
   infoText: {
     fontSize: 16,
     color: 'gray',
+  },
+  feedbackText: {
+    fontSize: 16,
+    color: '#0000ff',
+    fontWeight: 'bold',
+    marginTop: 10,
   },
   errorText: {
     fontSize: 18,

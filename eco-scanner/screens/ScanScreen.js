@@ -6,6 +6,7 @@ export default function App({ navigation }) {
   const [type, setType] = useState(CameraType.back);
   const [permission, requestPermission] = Camera.useCameraPermissions();
   const [scanned, setScanned] = useState(false);
+  const [isScanning, setIsScanning] = useState(false); // New state to manage the initial tap
 
   if (!permission) {
     return <View />;
@@ -32,18 +33,26 @@ export default function App({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Camera
-        style={styles.camera}
-        type={type}
-        onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-      >
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={toggleCameraType}>
-            <Text style={styles.text}>Flip Camera</Text>
-          </TouchableOpacity>
-        </View>
-      </Camera>
-      {scanned && <Button title={'Tap to Scan Again'} onPress={() => setScanned(false)} />}
+      {isScanning ? (
+        <Camera
+          style={styles.camera}
+          type={type}
+          onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+        >
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.button} onPress={toggleCameraType}>
+              <Text style={styles.text}>Flip Camera</Text>
+            </TouchableOpacity>
+          </View>
+        </Camera>
+      ) : (
+        <TouchableOpacity style={styles.scanButton} onPress={() => setIsScanning(true)}>
+          <Text style={styles.buttonText}>Tap to Scan</Text>
+        </TouchableOpacity>
+      )}
+      {scanned && isScanning && (
+        <Button title={'Tap to Scan Again'} onPress={() => setScanned(false)} />
+      )}
     </View>
   );
 }
@@ -71,5 +80,17 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: 'white',
+  },
+  scanButton: {
+    backgroundColor: 'blue',
+    padding: 15,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 18,
   },
 });

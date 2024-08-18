@@ -11,8 +11,7 @@ export default function HistoryScreen() {
         const storedHistory = await AsyncStorage.getItem('scanHistory');
         if (storedHistory) {
           const parsedHistory = JSON.parse(storedHistory);
-          // Filter out any null or undefined entries
-          const filteredHistory = parsedHistory.filter(item => item && item.product_name);
+          const filteredHistory = parsedHistory.filter(item => item && item.product_name); // Filter out invalid entries
           setHistory(filteredHistory);
         }
       } catch (error) {

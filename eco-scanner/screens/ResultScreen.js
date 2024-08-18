@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, Button, ScrollView } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
 export default function ResultScreen({ route, navigation }) {
@@ -12,6 +13,7 @@ export default function ResultScreen({ route, navigation }) {
       try {
         const response = await axios.get(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
         setProductData(response.data.product);
+        await saveToHistory(response.data.product); // Save product data to history
       } catch (error) {
         console.error('Error fetching product data:', error);
       } finally {
@@ -21,6 +23,17 @@ export default function ResultScreen({ route, navigation }) {
 
     fetchProductData();
   }, [barcode]);
+
+  const saveToHistory = async (product) => {
+    try {
+      const history = await AsyncStorage.getItem('scanHistory');
+      const historyArray = history ? JSON.parse(history) : [];
+      historyArray.push(product);
+      await AsyncStorage.setItem('scanHistory', JSON.stringify(historyArray));
+    } catch (error) {
+      console.error('Error saving to history:', error);
+    }
+  };
 
   const getEcoScoreFeedback = (ecoScore) => {
     switch (ecoScore) {
@@ -34,6 +47,22 @@ export default function ResultScreen({ route, navigation }) {
         return 'This product has a bad eco-score, indicating a higher environmental impact. Consider choosing a more environmentally friendly option.';
       default:
         return 'Eco-score not available.';
+    }
+  };
+
+  const evaluatePackaging = (packaging) => {
+    if (!packaging) return 'Packaging information not available.';
+
+    const lowerCasePackaging = packaging.toLowerCase();
+
+    if (lowerCasePackaging.includes('paper') || lowerCasePackaging.includes('glass') || lowerCasePackaging.includes('metal') || lowerCasePackaging.includes('aluminum')) {
+      return 'This product uses environmentally friendly materials.';
+    } else if (lowerCasePackaging.includes('pet') || lowerCasePackaging.includes('hdpe')) {
+      return 'This product uses recyclable plastic.';
+    } else if (lowerCasePackaging.includes('pvc') || lowerCasePackaging.includes('non-recyclable')) {
+      return 'This product uses non-recyclable materials.';
+    } else {
+      return 'Packaging material is mixed or not clearly defined.';
     }
   };
 
@@ -80,11 +109,7 @@ export default function ResultScreen({ route, navigation }) {
       {productData.packaging && (
         <View style={styles.infoBlock}>
           <Text style={styles.text}>Packaging: {productData.packaging}</Text>
-          <Text style={styles.infoText}>
-            Packaging details indicate the materials used and their recyclability. 
-            More sustainable packaging includes materials that are recyclable, compostable, or made from renewable resources. 
-            Understanding packaging helps in reducing waste and making environmentally friendly choices.
-          </Text>
+          <Text style={styles.infoText}>{evaluatePackaging(productData.packaging)}</Text>
         </View>
       )}
       {productData.carbon_footprint_value && (

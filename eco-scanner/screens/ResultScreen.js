@@ -1,27 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, Button, ScrollView } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import { throttle } from 'lodash';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function ResultScreen({ route, navigation }) {
   const { barcode } = route.params;
   const [productData, setProductData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchProductData = async () => {
-      try {
-        const response = await axios.get(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
-        setProductData(response.data.product);
-        await saveToHistory(response.data.product); // Save product data to history
-      } catch (error) {
-        console.error('Error fetching product data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Throttled function for fetching product data
+  const throttledFetchProductData = throttle(async (barcode) => {
+    try {
+      const response = await axios.get(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
+      setProductData(response.data.product);
+      await saveToHistory(response.data.product); // Save product data to history
+    } catch (error) {
+      console.error('Error fetching product data:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, 1000); // Throttle the function to allow one call per second
 
-    fetchProductData();
+  useEffect(() => {
+    setLoading(true);
+    throttledFetchProductData(barcode);
   }, [barcode]);
 
   const saveToHistory = async (product) => {

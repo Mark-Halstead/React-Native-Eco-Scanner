@@ -10,8 +10,8 @@ export default function HomeScreen({ navigation }) {
         onPress={() => navigation.navigate('Scan')}
       />
       <Button
-        title="View Last Scan Result"
-        onPress={() => navigation.navigate('Result')}
+        title="View Scan History"
+        onPress={() => navigation.navigate('History')}
       />
     </View>
   );

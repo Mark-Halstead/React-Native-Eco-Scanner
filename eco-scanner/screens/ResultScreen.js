@@ -49,6 +49,18 @@ export default function ResultScreen({ route, navigation }) {
       <Text style={styles.text}>Proteins: {productData.nutriments.proteins_value} {productData.nutriments.proteins_unit}</Text>
       {/* Add more nutrients as needed */}
 
+      {/* Environmental Impact */}
+      <Text style={styles.sectionTitle}>Environmental Impact:</Text>
+      {productData.ecoscore_grade && (
+        <Text style={styles.text}>Eco-Score: {productData.ecoscore_grade.toUpperCase()}</Text>
+      )}
+      {productData.packaging && (
+        <Text style={styles.text}>Packaging: {productData.packaging}</Text>
+      )}
+      {productData.carbon_footprint_value && (
+        <Text style={styles.text}>Carbon Footprint: {productData.carbon_footprint_value} {productData.carbon_footprint_unit}</Text>
+      )}
+
       <Button title="View History" onPress={() => navigation.navigate('History')} />
     </View>
   );

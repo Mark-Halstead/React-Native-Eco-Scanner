@@ -22,11 +22,62 @@ export default function HistoryScreen() {
     fetchHistory();
   }, []);
 
+  const getEcoScoreFeedback = (ecoScore) => {
+    switch (ecoScore) {
+      case 'A':
+      case 'B':
+        return 'This product has a good eco-score, indicating a lower environmental impact.';
+      case 'C':
+        return 'This product has a moderate eco-score. Consider if there are better options available.';
+      case 'D':
+      case 'E':
+        return 'This product has a bad eco-score, indicating a higher environmental impact. Consider choosing a more environmentally friendly option.';
+      default:
+        return 'Eco-score not available.';
+    }
+  };
+
+  const evaluatePackaging = (packaging) => {
+    if (!packaging) return 'Packaging information not available.';
+
+    const lowerCasePackaging = packaging.toLowerCase();
+
+    if (lowerCasePackaging.includes('paper') || lowerCasePackaging.includes('glass') || lowerCasePackaging.includes('metal') || lowerCasePackaging.includes('aluminum')) {
+      return 'This product uses environmentally friendly materials.';
+    } else if (lowerCasePackaging.includes('pet') || lowerCasePackaging.includes('hdpe')) {
+      return 'This product uses recyclable plastic.';
+    } else if (lowerCasePackaging.includes('pvc') || lowerCasePackaging.includes('non-recyclable')) {
+      return 'This product uses non-recyclable materials.';
+    } else {
+      return 'Packaging material is mixed or not clearly defined.';
+    }
+  };
+
   const renderItem = ({ item }) => (
     <View style={styles.item}>
       <Text style={styles.title}>{item.product_name}</Text>
       <Text style={styles.text}>Brand: {item.brands}</Text>
       <Text style={styles.text}>Category: {item.categories}</Text>
+
+      {/* Environmental Impact */}
+      {item.ecoscore_grade && (
+        <View style={styles.infoBlock}>
+          <Text style={styles.text}>Eco-Score: {item.ecoscore_grade.toUpperCase()}</Text>
+          <Text style={styles.infoText}>{getEcoScoreFeedback(item.ecoscore_grade.toUpperCase())}</Text>
+        </View>
+      )}
+      {item.packaging && (
+        <View style={styles.infoBlock}>
+          <Text style={styles.text}>Packaging: {item.packaging}</Text>
+          <Text style={styles.infoText}>{evaluatePackaging(item.packaging)}</Text>
+        </View>
+      )}
+      {item.carbon_footprint_value && (
+        <View style={styles.infoBlock}>
+          <Text style={styles.text}>Carbon Footprint: {item.carbon_footprint_value} {item.carbon_footprint_unit}</Text>
+          <Text style={styles.infoText}>The carbon footprint represents the total greenhouse gas emissions caused directly or indirectly by the product. A lower carbon footprint indicates a lower environmental impact.</Text>
+        </View>
+      )}
     </View>
   );
 
@@ -62,6 +113,14 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 16,
     marginTop: 4,
+  },
+  infoBlock: {
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  infoText: {
+    fontSize: 16,
+    color: 'gray',
   },
   noHistoryText: {
     fontSize: 18,

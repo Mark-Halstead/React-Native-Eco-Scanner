@@ -1,17 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, Button } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
-export default function ResultScreen({ route }) {
-  const { barcode } = route.params;
+export default function ResultScreen({ route, navigation }) {
+  const { barcode } = route.params || {}; // Safely extract barcode
   const [productData, setProductData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!barcode) {
+      console.error('No barcode provided');
+      navigation.goBack();
+      return;
+    }
+
     const fetchProductData = async () => {
       try {
         const response = await axios.get(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
         setProductData(response.data.product);
+        await saveToHistory(response.data.product); // Save product data to history
       } catch (error) {
         console.error('Error fetching product data:', error);
       } finally {
@@ -21,6 +29,17 @@ export default function ResultScreen({ route }) {
 
     fetchProductData();
   }, [barcode]);
+
+  const saveToHistory = async (product) => {
+    try {
+      const history = await AsyncStorage.getItem('scanHistory');
+      const historyArray = history ? JSON.parse(history) : [];
+      historyArray.push(product);
+      await AsyncStorage.setItem('scanHistory', JSON.stringify(historyArray));
+    } catch (error) {
+      console.error('Error saving to history:', error);
+    }
+  };
 
   if (loading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
@@ -40,7 +59,7 @@ export default function ResultScreen({ route }) {
       <Text style={styles.text}>Brand: {productData.brands}</Text>
       <Text style={styles.text}>Category: {productData.categories}</Text>
       <Text style={styles.text}>Nutritional Information: {productData.nutriments.energy_value} {productData.nutriments.energy_unit}</Text>
-      {/* Add more fields as needed */}
+      <Button title="View History" onPress={() => navigation.navigate('History')} />
     </View>
   );
 }

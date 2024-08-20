@@ -9,18 +9,17 @@ export default function ResultScreen({ route, navigation }) {
   const [productData, setProductData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Throttled function for fetching product data
   const throttledFetchProductData = throttle(async (barcode) => {
     try {
       const response = await axios.get(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
       setProductData(response.data.product);
-      await saveToHistory(response.data.product); // Save product data to history
+      await saveToHistory(response.data.product);
     } catch (error) {
       console.error('Error fetching product data:', error);
     } finally {
       setLoading(false);
     }
-  }, 1000); // Throttle the function to allow one call per second
+  }, 1000);
 
   useEffect(() => {
     setLoading(true);
@@ -70,7 +69,7 @@ export default function ResultScreen({ route, navigation }) {
   };
 
   if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
+    return <ActivityIndicator size="large" color="#4CAF50" />;
   }
 
   if (!productData) {
@@ -87,16 +86,15 @@ export default function ResultScreen({ route, navigation }) {
       <Text style={styles.text}>Brand: {productData.brands}</Text>
       <Text style={styles.text}>Category: {productData.categories}</Text>
 
-      {/* Nutritional Breakdown */}
       <Text style={styles.sectionTitle}>Nutritional Information:</Text>
-      <Text style={styles.text}>Calories: {productData.nutriments.energy_value} {productData.nutriments.energy_unit}</Text>
-      <Text style={styles.text}>Fat: {productData.nutriments.fat_value} {productData.nutriments.fat_unit}</Text>
-      <Text style={styles.text}>Saturated Fat: {productData.nutriments['saturated-fat_value']} {productData.nutriments.fat_unit}</Text>
-      <Text style={styles.text}>Sugars: {productData.nutriments.sugars_value} {productData.nutriments.sugars_unit}</Text>
-      <Text style={styles.text}>Proteins: {productData.nutriments.proteins_value} {productData.nutriments.proteins_unit}</Text>
-      {/* Add more nutrients as needed */}
+      <View style={styles.infoBlock}>
+        <Text style={styles.text}>Calories: {productData.nutriments.energy_value} {productData.nutriments.energy_unit}</Text>
+        <Text style={styles.text}>Fat: {productData.nutriments.fat_value} {productData.nutriments.fat_unit}</Text>
+        <Text style={styles.text}>Saturated Fat: {productData.nutriments['saturated-fat_value']} {productData.nutriments.fat_unit}</Text>
+        <Text style={styles.text}>Sugars: {productData.nutriments.sugars_value} {productData.nutriments.sugars_unit}</Text>
+        <Text style={styles.text}>Proteins: {productData.nutriments.proteins_value} {productData.nutriments.proteins_unit}</Text>
+      </View>
 
-      {/* Environmental Impact */}
       <Text style={styles.sectionTitle}>Environmental Impact:</Text>
       {productData.ecoscore_grade && (
         <View style={styles.infoBlock}>
@@ -125,7 +123,9 @@ export default function ResultScreen({ route, navigation }) {
         </View>
       )}
 
-      <Button title="View History" onPress={() => navigation.navigate('History')} />
+      <View style={styles.buttonContainer}>
+        <Button title="View History" onPress={() => navigation.navigate('History')} color="#4CAF50" />
+      </View>
     </ScrollView>
   );
 }
@@ -133,39 +133,56 @@ export default function ResultScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   scrollContainer: {
     padding: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: '#E8F5E9',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
+    color: '#333333', // Clean dark gray for titles
     marginBottom: 16,
+    textAlign: 'center',
   },
   text: {
     fontSize: 18,
     marginBottom: 8,
+    color: '#333333', // Neutral dark gray for text
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
+    color: '#333333', // Consistent dark gray for section titles
     marginTop: 20,
+    marginBottom: 10,
+    textAlign: 'center',
   },
   infoBlock: {
-    marginTop: 16,
-    marginBottom: 8,
+    backgroundColor: '#FFFFFF',
+    padding: 16,
+    borderRadius: 10,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   infoText: {
     fontSize: 16,
-    color: 'gray',
+    color: '#757575',
   },
   feedbackText: {
     fontSize: 16,
-    color: '#0000ff',
+    color: '#333333',
     fontWeight: 'bold',
     marginTop: 10,
   },
   errorText: {
     fontSize: 18,
     color: 'red',
+    textAlign: 'center',
+  },
+  buttonContainer: {
+    marginTop: 20,
+    marginBottom: 40,
   },
 });

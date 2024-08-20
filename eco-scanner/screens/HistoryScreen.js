@@ -97,35 +97,48 @@ export default function HistoryScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
-  item: {
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  text: {
-    fontSize: 16,
-    marginTop: 4,
-  },
-  infoBlock: {
-    marginTop: 16,
-    marginBottom: 8,
-  },
-  infoText: {
-    fontSize: 16,
-    color: 'gray',
-  },
-  noHistoryText: {
-    fontSize: 18,
-    color: 'gray',
-    textAlign: 'center',
-    marginTop: 20,
-  },
-});
+    container: {
+      flex: 1,
+      backgroundColor: '#E8F5E9',
+      padding: 16,
+    },
+    item: {
+      backgroundColor: '#ffffff',
+      borderRadius: 10,
+      padding: 16,
+      marginVertical: 8,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 2,
+    },
+    title: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: '#333333', // Updated to dark gray
+    },
+    text: {
+      fontSize: 16,
+      marginTop: 4,
+      color: '#333333', // Updated to dark gray
+    },
+    infoBlock: {
+      marginTop: 16,
+      marginBottom: 8,
+      paddingVertical: 10,
+      paddingHorizontal: 15,
+      backgroundColor: '#F1F8E9',
+      borderRadius: 8,
+    },
+    infoText: {
+      fontSize: 16,
+      color: '#757575',
+    },
+    noHistoryText: {
+      fontSize: 18,
+      color: '#757575',
+      textAlign: 'center',
+      marginTop: 20,
+    },
+  });

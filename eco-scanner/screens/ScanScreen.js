@@ -2,7 +2,7 @@ import { Camera, CameraType } from 'expo-camera/legacy';
 import { useState } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export default function App({ navigation }) {
+export default function ScanScreen({ navigation }) {
   const [type, setType] = useState(CameraType.back);
   const [permission, requestPermission] = Camera.useCameraPermissions();
   const [scanned, setScanned] = useState(false);
@@ -15,8 +15,8 @@ export default function App({ navigation }) {
   if (!permission.granted) {
     return (
       <View style={styles.container}>
-        <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
-        <Button onPress={requestPermission} title="grant permission" />
+        <Text style={styles.permissionText}>We need your permission to show the camera</Text>
+        <Button onPress={requestPermission} title="Grant Permission" color="#4CAF50" />
       </View>
     );
   }
@@ -51,7 +51,9 @@ export default function App({ navigation }) {
         </TouchableOpacity>
       )}
       {scanned && isScanning && (
-        <Button title={'Tap to Scan Again'} onPress={() => setScanned(false)} />
+        <View style={styles.scanAgainButtonContainer}>
+          <Button title={'Tap to Scan Again'} onPress={() => setScanned(false)} color="#4CAF50" />
+        </View>
       )}
     </View>
   );
@@ -61,36 +63,54 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#E8F5E9', // Match the background color to the theme
   },
   camera: {
     flex: 1,
+    width: '100%',
+    justifyContent: 'flex-end',
   },
   buttonContainer: {
-    flex: 1,
     flexDirection: 'row',
     backgroundColor: 'transparent',
-    margin: 64,
+    marginBottom: 64,
+    paddingHorizontal: 20,
+    justifyContent: 'center',
   },
   button: {
-    flex: 1,
-    alignSelf: 'flex-end',
-    alignItems: 'center',
-  },
-  text: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: 'white',
-  },
-  scanButton: {
-    backgroundColor: 'blue',
+    backgroundColor: '#4CAF50', // Green background for button to match theme
     padding: 15,
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'center',
   },
+  text: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  scanButton: {
+    backgroundColor: '#4CAF50', // Green background to match the app's theme
+    padding: 20,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 30,
+  },
   buttonText: {
     color: 'white',
     fontSize: 18,
+    fontWeight: 'bold',
+  },
+  scanAgainButtonContainer: {
+    marginTop: 20,
+  },
+  permissionText: {
+    fontSize: 18,
+    color: '#388E3C',
+    textAlign: 'center',
+    marginBottom: 20,
   },
 });
